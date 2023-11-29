@@ -47,6 +47,10 @@ void AGenjiCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	{
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AGenjiCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGenjiCharacter::Look);
+
+
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	}
 }
 
@@ -71,4 +75,5 @@ void AGenjiCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookVector.Y);
 	}
 }
+
 
