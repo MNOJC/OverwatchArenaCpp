@@ -2,12 +2,15 @@
 
 
 #include "MainGameMode.h"
-
 #include "GenjiCharacter.h"
+#include "UObject/ConstructorHelpers.h"
 #include "MainPlayerController.h"
+
+
 
 AMainGameMode::AMainGameMode()
 {
-	DefaultPawnClass = AGenjiCharacter::StaticClass();
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/Characters/Genji/BP_GenjiCharacter"));
+	DefaultPawnClass = PlayerPawnClassFinder.Class;
 	PlayerControllerClass = AMainPlayerController::StaticClass();
 }

@@ -3,3 +3,7 @@
 
 #include "MainPlayerController.h"
 
+AMainPlayerController::AMainPlayerController()
+{
+	SetShowMouseCursor(false);
+}

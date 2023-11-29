@@ -13,5 +13,8 @@ UCLASS()
 class OVERWATCHARENACPP_API AMainPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
+public:
+
+	AMainPlayerController();
 };
