@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputAction.h"
+#include "Components/TimelineComponent.h"
 #include "GenjiCharacter.generated.h"
 
+class UTimelineComponent;
 
 UCLASS()
 class OVERWATCHARENACPP_API AGenjiCharacter : public ACharacter
@@ -16,7 +18,8 @@ class OVERWATCHARENACPP_API AGenjiCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AGenjiCharacter();
-
+	
+	// Input
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
 	class UInputMappingContext* DefaultMappingContext;
 
@@ -28,6 +31,32 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* JumpAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* DashAction;
+
+	// Dash implementation
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Dash_Capacity)
+	float DashLength = 1500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Timeline)
+	UCurveFloat* DashingCurve;
+	
+	UPROPERTY()
+	FVector CurrentTimelineLocation;
+	
+	UPROPERTY()
+	FVector TimelineStartLocation;
+	
+	UPROPERTY()
+	FVector LocationToDash;
+	
+	UFUNCTION()
+	void DashFinished();
+
+	UFUNCTION()
+	void DashUpdate(float Value);
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -42,5 +71,14 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+
+	//Dash Functions
+	void Dash();
+	FVector DashingLocation();
+	UTimelineComponent*  DashTimeline;
+	void BindDashTimeline();
+
+	//Check ground
+	bool CheckIfIsGrounded();
 	
 };
