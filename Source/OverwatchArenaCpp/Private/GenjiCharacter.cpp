@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -64,6 +65,9 @@ void AGenjiCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &AGenjiCharacter::Dash);
+
+		EnhancedInputComponent->BindAction(WallClimbAction, ETriggerEvent::Triggered, this, &AGenjiCharacter::WallClimb);
+		EnhancedInputComponent->BindAction(WallClimbAction, ETriggerEvent::Completed, this, &AGenjiCharacter::WallClimbFinished);
 	}
 }
 
@@ -209,3 +213,62 @@ bool AGenjiCharacter::CheckIfIsGrounded()
 	else
 		return false;
 }
+
+// -------------------------------------------------------- WALL CLIMB ------------------------------------------------------------------------------------------------- //
+
+bool AGenjiCharacter::CheckWallClimb()
+{
+	FVector StartLocation = GetActorLocation();
+	FVector ForwardVector = GetActorForwardVector();
+	FVector EndLocation = ForwardVector * 50 + StartLocation;
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params))
+		return true;
+	else
+		return false;
+}
+
+bool AGenjiCharacter::IsWalkingForward()
+{
+	if(GetVelocity().Y != 0)
+		return true;
+	else
+		return false;
+	
+}
+
+void AGenjiCharacter::WallClimb()
+{
+	if (CheckWallClimb() && IsWalkingForward() && bCanClimbing)
+	{
+		float WallClimbingDuration = 1.0f;
+		
+		Timer = Timer + UGameplayStatics::GetWorldDeltaSeconds(GetWorld());
+
+		if (Timer > WallClimbingDuration)
+		{
+			Timer = WallClimbingDuration;
+		}
+		else
+		{
+			bIsCLimbing = true;
+			
+			LaunchCharacter(FVector(0, 0, 740), true, true);
+		}
+	} else {
+		
+		bIsCLimbing = false;
+		Timer = 0;
+	}
+		
+}
+
+void AGenjiCharacter::WallClimbFinished()
+{
+	bIsCLimbing = false;
+}
+
+

@@ -19,7 +19,7 @@ public:
 	// Sets default values for this character's properties
 	AGenjiCharacter();
 	
-	// Input
+	// Input genji
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
 	class UInputMappingContext* DefaultMappingContext;
 
@@ -34,6 +34,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* DashAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* WallClimbAction;
 
 	// Dash implementation
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Dash_Capacity)
@@ -61,6 +64,17 @@ public:
 	UFUNCTION()
 	void DashUpdate(float Value);
 
+	// Wall climb
+
+	UPROPERTY()
+	bool bIsCLimbing = false;
+
+	UPROPERTY()
+	bool bCanClimbing = true;
+
+	UPROPERTY()
+	float Timer;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -85,5 +99,11 @@ protected:
 
 	//Check ground
 	bool CheckIfIsGrounded();
+
+	//Wall Climb
+	bool CheckWallClimb();
+	bool IsWalkingForward();
+	void WallClimb();
+	void WallClimbFinished();
 	
 };
