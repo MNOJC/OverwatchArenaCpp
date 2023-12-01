@@ -92,9 +92,12 @@ void AGenjiCharacter::Look(const FInputActionValue& Value)
 // -------------------------------------------------------- DASHING CAPACITY ------------------------------------------------------------------------------------------------- //
 void AGenjiCharacter::Dash ()
 {
-	LocationToDash = DashingLocation();
 	TimelineStartLocation = GetActorLocation();
 	bool bDashing = true;
+	if (DashingLocation())
+	{
+		NewPlayRateForDash();
+	}
 	
 	DashTimeline->PlayFromStart();
 		
@@ -102,7 +105,7 @@ void AGenjiCharacter::Dash ()
 	
 }
 
-FVector AGenjiCharacter::DashingLocation()
+bool AGenjiCharacter::DashingLocation()
 {
 	const UCameraComponent* Camera = GetComponentByClass<UCameraComponent>();
 	const FRotator CameraRot = Camera->GetComponentRotation();
@@ -120,12 +123,14 @@ FVector AGenjiCharacter::DashingLocation()
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params))
 	{
 		FVector HitLocation = HitResult.Location;
-		return FVector(HitLocation.X, HitLocation.Y, (HitLocation.Z + 90));
+		LocationToDash = FVector(HitLocation.X, HitLocation.Y, (HitLocation.Z + 90));
+		return true;
 		
 	} else {
 		
 		FVector TraceEnd = HitResult.TraceEnd;
-		return FVector(TraceEnd.X, TraceEnd.Y, (TraceEnd.Z + 90));
+		LocationToDash = FVector(TraceEnd.X, TraceEnd.Y, (TraceEnd.Z + 90));
+		return false;
 	}
 	
 }
@@ -158,6 +163,8 @@ void AGenjiCharacter::DashFinished()
 		}, 0.2f, false);
 		
 	}
+
+	DashTimeline->SetPlayRate(1.0f);
 }
 void AGenjiCharacter::BindDashTimeline()
 {
@@ -174,7 +181,16 @@ void AGenjiCharacter::BindDashTimeline()
 		
 		
 	}
-} 
+}
+
+void AGenjiCharacter::NewPlayRateForDash()
+{
+	const float Distance = UKismetMathLibrary::Vector_Distance(TimelineStartLocation, LocationToDash);
+	PlayRate = ((1 - (Distance/DashLength)) + 1); 
+	
+	DashTimeline->SetPlayRate(PlayRate);
+}
+
 // -------------------------------------------------------- CHECK IF IS GROUNDED ------------------------------------------------------------------------------------------------- //
 
 bool AGenjiCharacter::CheckIfIsGrounded()

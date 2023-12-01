@@ -43,6 +43,10 @@ public:
 	UCurveFloat* DashingCurve;
 	
 	UPROPERTY()
+	float PlayRate;
+	
+	
+	UPROPERTY()
 	FVector CurrentTimelineLocation;
 	
 	UPROPERTY()
@@ -74,9 +78,10 @@ protected:
 
 	//Dash Functions
 	void Dash();
-	FVector DashingLocation();
+	bool DashingLocation();
 	UTimelineComponent*  DashTimeline;
 	void BindDashTimeline();
+	void NewPlayRateForDash();
 
 	//Check ground
 	bool CheckIfIsGrounded();
