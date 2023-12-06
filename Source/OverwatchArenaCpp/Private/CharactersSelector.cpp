@@ -8,6 +8,7 @@
 #include "WidowmakerCharacter.h"
 #include "Elements/Framework/TypedElementQueryBuilder.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ACharactersSelector::ACharactersSelector()
@@ -52,8 +53,8 @@ void ACharactersSelector::SwitchCharacterType(AActor* ActorOverlap)
 			break;
 			
 		}
-
 		
+		SetActorToLook();
 		
 	}
 }
@@ -62,19 +63,18 @@ void ACharactersSelector::SwitchCharacterType(AActor* ActorOverlap)
 void ACharactersSelector::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UWidgetComponent* WidgetComponent = FindComponentByClass<UWidgetComponent>();
 	
-	if (WidgetComponent)
+	if (const UWidgetComponent* WidgetComponent = FindComponentByClass<UWidgetComponent>())
 	{
 		UUserWidget* Widget = WidgetComponent->GetUserWidgetObject();
-		UCharacterIcon* CharacterIconWidget = Cast<UCharacterIcon>(Widget);
-
-		if (CharacterIconWidget)
+		
+		if (UCharacterIcon* CharacterIconWidget = Cast<UCharacterIcon>(Widget))
 			CharacterIconWidget->UpdateCharacterType(CharacterType);
 		
 		
 	}
+
+	SetActorToLook();
 	
 }
 
@@ -83,5 +83,43 @@ void ACharactersSelector::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (UWidgetComponent* WidgetComponent = FindComponentByClass<UWidgetComponent>())
+	{
+		if (ActorToLook)
+		{
+		const FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), ActorToLook->GetActorLocation());
+		const FRotator WidgetRotation = FRotator(0, LookRotation.Yaw, 0);
+		WidgetComponent->SetRelativeRotation(WidgetRotation);
+		}
+	}
+
+}
+
+void ACharactersSelector::SetActorToLook()
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "Player", OutActors);
+
+	for (AActor* CurrentActor : OutActors)
+	{
+		ActorToLook = CurrentActor;
+		
+	}
+	
+		TArray<AActor*> SelectorOutActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), BP_CharacterSelector, SelectorOutActors);
+
+		for (AActor* CurrentActor : SelectorOutActors)
+		{
+			ACharactersSelector* CurrentCharactersSelector = Cast<ACharactersSelector>(CurrentActor);
+			
+			if (CurrentCharactersSelector)
+			{
+				CurrentCharactersSelector->ActorToLook = ActorToLook;
+			}
+			
+		}
+		
+	
 }
 

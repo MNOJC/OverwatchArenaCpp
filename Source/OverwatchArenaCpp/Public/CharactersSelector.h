@@ -31,6 +31,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enumeration")
 	ECharacterType CharacterType = ECharacterType::Genji;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Widget")
+	AActor* ActorToLook;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Class ref")
+	TSubclassOf<class ACharactersSelector> BP_CharacterSelector;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -38,5 +44,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void SetActorToLook ();
 
 };
+
+
