@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "MainHUD.h"
 #include "MainGameMode.generated.h"
 
 /**
@@ -17,4 +18,7 @@ class OVERWATCHARENACPP_API AMainGameMode : public AGameModeBase
 public:
 	
 	AMainGameMode();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= Ref)
+	TSubclassOf<AMainHUD> BP_MainHUD;
 };
