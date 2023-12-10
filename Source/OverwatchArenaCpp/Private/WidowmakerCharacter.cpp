@@ -2,13 +2,18 @@
 
 
 #include "WidowmakerCharacter.h"
+
+#include "BlueprintEditor.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "CableComponent.h"
+#include "MainHUD.h"
+#include "SpiderBomb.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetInternationalizationLibrary.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Materials/MaterialInterface.h"
 
@@ -21,8 +26,9 @@ AWidowmakerCharacter::AWidowmakerCharacter()
 	
 	PrimaryActorTick.bCanEverTick = true;
 	GrappleHookTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("Timeline"));
-	
 
+	TargetDirectionBomb = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TargetDirectionBomb"));
+	TargetDirectionBomb->SetupAttachment( GetComponentByClass<UCameraComponent>());
 	
 }
 
@@ -31,8 +37,8 @@ void AWidowmakerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	MainHUD = Cast<AMainHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD());
 	
-
 	BindGrappleHookTimeline();
 	
 }
@@ -60,6 +66,12 @@ void AWidowmakerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AWidowmakerCharacter::StopJumping);
 
 		EnhancedInputComponent->BindAction(GrappleAction, ETriggerEvent::Triggered, this, &AWidowmakerCharacter::GrappleHook);
+
+		EnhancedInputComponent->BindAction(ScopeAction, ETriggerEvent::Started, this, &AWidowmakerCharacter::ShowScope);
+		EnhancedInputComponent->BindAction(ScopeAction, ETriggerEvent::Canceled, this, &AWidowmakerCharacter::HideScope);
+		EnhancedInputComponent->BindAction(ScopeAction, ETriggerEvent::Completed, this, &AWidowmakerCharacter::HideScope);
+
+		EnhancedInputComponent->BindAction(BombAction, ETriggerEvent::Triggered, this, &AWidowmakerCharacter::ThrowBomb);
 		
 	}
 }
@@ -233,4 +245,48 @@ void AWidowmakerCharacter::DelayedFirstLaunch()
 void AWidowmakerCharacter::CanGrappleHook()
 {
 	bCanGrappleHook = true;
+}
+
+
+// -------------------------------------------------------- SCOPE ------------------------------------------------------------------------------------------------- //
+
+void AWidowmakerCharacter::ShowScope()
+{
+	if (UCameraComponent* Camera = GetComponentByClass<UCameraComponent>())
+	{
+		Camera->FieldOfView = 50.0f;
+		MainHUD->ShowHideScope();
+	}
+}
+
+void AWidowmakerCharacter::HideScope()
+{
+	if (UCameraComponent* Camera = GetComponentByClass<UCameraComponent>())
+	{
+		Camera->FieldOfView = 100.0f;
+		MainHUD->ShowHideScope();
+	}
+}
+
+// -------------------------------------------------------- SPIDER BOMB ------------------------------------------------------------------------------------------------- //
+
+void AWidowmakerCharacter::ThrowBomb()
+{
+	FVector Location = FVector (this->GetActorLocation().X, this->GetActorLocation().Y, this->GetActorLocation().Z + 20);
+	
+	FActorSpawnParameters SpawnParameters;
+	ASpiderBomb* SpiderBomb = GetWorld()->SpawnActor<ASpiderBomb>(BP_SpiderBomb, Location, this->GetActorRotation(), SpawnParameters);
+
+
+	const UCameraComponent* Camera = GetComponentByClass<UCameraComponent>();
+	if (Camera)
+	{
+		//FVector();
+		const FVector Direction =  Camera->GetForwardVector();
+		const FVector Impulse = Direction * 1500; 
+		const FName BoneName = "None";
+	
+		SpiderBomb->Cube->AddImpulse(Impulse, BoneName, false);
+	}
+	
 }

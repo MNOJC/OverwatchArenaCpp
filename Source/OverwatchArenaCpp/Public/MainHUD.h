@@ -15,5 +15,15 @@ class OVERWATCHARENACPP_API AMainHUD : public AHUD
 	GENERATED_BODY()
 
 
+public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UUserWidget> ScopeClass;
+
+	UPROPERTY(VisibleInstanceOnly)
+	class UScopeWidget* ScopeWidget;
+	
+	bool bScope = false;
+	void ShowHideScope();
+			
 };

@@ -6,6 +6,9 @@
 #include "CableComponent.h"
 #include "GameFramework/Character.h"
 #include "InputAction.h"
+#include "MainHUD.h"
+#include "Components/ArrowComponent.h"
+#include "SpiderBomb.h"
 #include "Components/TimelineComponent.h"
 #include "WidowmakerCharacter.generated.h"
 
@@ -33,10 +36,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* JumpAction;
 
-	//Grapple hook
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* ScopeAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* GrappleAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* BombAction;
+
+	//Component
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
+	UStaticMeshComponent* TargetDirectionBomb;
+	//Grapple hook
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Material)
 	UMaterialInterface* MateriableCable;
@@ -63,6 +75,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Parameters)
 	float GrappleDistance = 1900.0f;
 
+	//SpiderBomb
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpiderBomb)
+	TSubclassOf<ASpiderBomb> BP_SpiderBomb;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -87,7 +103,6 @@ public:
 	void BindGrappleHookTimeline();
 	void ResetGrappleRender();
 	void CanGrappleHook();
-
 	void DelayedFirstLaunch();
 
 	bool bGrappleHookActivated = false;
@@ -102,5 +117,12 @@ public:
 
 	FVector GrappleHitLocation;
 	UCableComponent* CableComponent;
+	
+	void ShowScope();
+	void HideScope();
+	AMainHUD* MainHUD;
+
+	void ThrowBomb();
+	
 
 };
