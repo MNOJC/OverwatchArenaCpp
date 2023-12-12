@@ -5,6 +5,7 @@
 
 #include "CharacterIcon.h"
 #include "GenjiCharacter.h"
+#include "Tracer.h"
 #include "WidowmakerCharacter.h"
 #include "Elements/Framework/TypedElementQueryBuilder.h"
 #include "Kismet/GameplayStatics.h"
@@ -45,7 +46,8 @@ void ACharactersSelector::SwitchCharacterType(AActor* ActorOverlap)
 			break;
 			
 		case 3:
-
+			PlayerController->Possess(GetWorld()->SpawnActor<ATracer>(Tracer, ActorLocation, ActorRotation));
+			ActorOverlap->Destroy();
 			break;
 			
 		case 4:
