@@ -41,6 +41,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* StickyBomb;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* RecallAction;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enumeration")
 	EDashOmni DashOmnidirectionnal = EDashOmni::Front;
 
@@ -84,4 +87,27 @@ public:
 	FVector LocationToDash;
 	FVector InitialActorLocation;
 
+	//RECALL METHOD
+	void RecallInput();
+	void Recall();
+	void SetRecallNewPos();
+	void ResetRecallCapacity();
+
+	//RECALL ATTRIBUTES
+	
+	bool bCanSetPos = true;
+	float TimeBeforeSettingNewPosition = 0.05f;
+	TArray<FTransform> RecallPositions;
+	bool bCanRecall = true;
+	bool bRecallPressed = false;
+	int Counter = 0;
+	float TravelSpeed = 15;
+	float RotationSpeed = 15;
+	FTimerHandle DelayPosHandle;
+	FTimerHandle CooldownRecallHandle;
+	FTransform ActorLastTransform;
+
+	int32 TickCounter;
+	float TickInterval;
+	
 };
