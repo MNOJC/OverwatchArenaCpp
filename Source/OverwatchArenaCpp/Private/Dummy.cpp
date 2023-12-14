@@ -32,7 +32,11 @@ void ADummy::Tick(float DeltaTime)
 
 void ADummy::PlayLightDamage()
 {
-	SkeletalMesh->PlayAnimation(LightHit, false);
+	if (SkeletalMesh)
+	{
+		SkeletalMesh->PlayAnimation(LightHit, false);
+	}
+	
 }
 
 void ADummy::PlayHardDamage()
@@ -40,3 +44,19 @@ void ADummy::PlayHardDamage()
 	SkeletalMesh->PlayAnimation(HardHit, false);
 }
 
+void ADummy::Impulse()
+{
+	if (SkeletalMesh)
+	{
+		SkeletalMesh->SetSimulatePhysics(true);
+		SkeletalMesh->AddImpulse(FVector(0, 0, 99999), NAME_None, false);
+	}
+	
+	GetWorld()->GetTimerManager().SetTimer(CooldownReset, this, &ADummy::ResetPhysics, 4.0f, false,  4.0f);
+}
+
+void ADummy::ResetPhysics()
+{
+	SkeletalMesh->SetSimulatePhysics(false);
+	
+}

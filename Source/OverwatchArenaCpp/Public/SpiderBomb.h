@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Dummy.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "SpiderBomb.generated.h"
 
@@ -28,12 +30,21 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= StaticMesh)
 	UStaticMesh* CubeMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= Sphere)
+	USphereComponent* Sphere;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= StaticMesh)
 	UParticleSystem* ExplosionParticle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= StaticMesh)
+	ADummy* BP_Dummy;
+
 	UFUNCTION(BlueprintCallable)
 	void SimulatePhysics();
+
+	UFUNCTION(BlueprintCallable)
+	void OverlapDummy(UObject* OtherActor);
 
 	
 	void Explosion();

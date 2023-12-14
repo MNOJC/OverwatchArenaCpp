@@ -4,6 +4,7 @@
 #include "CharactersSelector.h"
 
 #include "CharacterIcon.h"
+#include "CustomCharacter.h"
 #include "GenjiCharacter.h"
 #include "Tracer.h"
 #include "WidowmakerCharacter.h"
@@ -51,7 +52,8 @@ void ACharactersSelector::SwitchCharacterType(AActor* ActorOverlap)
 			break;
 			
 		case 4:
-
+			PlayerController->Possess(GetWorld()->SpawnActor<ACustomCharacter>(CustomCharacter, ActorLocation, ActorRotation));
+			ActorOverlap->Destroy();
 			break;
 			
 		}

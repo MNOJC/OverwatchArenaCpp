@@ -31,6 +31,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Characters")
 	TSubclassOf<class ATracer> Tracer;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Characters")
+	TSubclassOf<class ACustomCharacter> CustomCharacter;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enumeration")
 	ECharacterType CharacterType = ECharacterType::Genji;
 

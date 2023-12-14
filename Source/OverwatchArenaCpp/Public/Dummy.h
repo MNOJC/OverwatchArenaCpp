@@ -37,6 +37,9 @@ public:
 
 	void PlayLightDamage();
 	void PlayHardDamage();
+	void Impulse();
+	void ResetPhysics();
+	FTimerHandle CooldownReset;
 
 };
 
